@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>致 闵辉</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@300;400;50&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background: linear-gradient(135deg, #fdf6f0 0%, #f5e6e8 50%, #f0d9da 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #5c4033;
+        }
+
+        /* 爱心飘落容器 */
+        .hearts-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .heart {
+            position: absolute;
+            top: -50px;
+            font-size: 20px;
+            color: #e8b4b8;
+            opacity: 0.6;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* 开场封面 */
+        .hero-section {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .name-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: clamp(3rem, 12vw, 7rem);
+            background: linear-gradient(135deg, #c9a9a6, #e8b4b8, #d4a5a5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            opacity: 0;
+            animation: fadeInUp 1.5s ease forwards 0.3s;
+            letter-spacing: 0.3em;
+            text-shadow: 0 4px 20px rgba(200, 160, 160, 0.3);
+        }
+
+        .subtitle {
+            font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+            margin-top: 1.5rem;
+            opacity: 0;
+            animation: fadeInUp 1.5s ease forwards 1s;
+            letter-spacing: 0.2em;
+            color: #8b6b61;
+        }
+
+        .typewriter {
+            margin-top: 3rem;
+            font-size: clamp(0.85rem, 2vw, 1rem);
+            color: #a08080;
+            opacity: 0;
+            animation: fadeInUp 1.5s ease forwards 1.8s;
+            min-height: 2em;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1em;
+            background: #c9a9a6;
+            margin-left: 2px;
+            animation: blink 1s infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            animation: fadeInUp 1.5s ease forwards 2.5s, bounce 2s infinite 3s;
+            font-size: 0.85rem;
+            color: #b09090;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-10px); }
+            60% { transform: translateX(-50%) translateY(-5px); }
+        }
+
+        /* 照片画廊 */
+        .gallery-section {
+            padding: 60px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .section-title {
+            text-align: center;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            color: #8b6b61;
+            margin-bottom: 50px;
+            letter-spacing: 0.2em;
+        }
+
+        .gallery {
+            columns: 3;
+            column-gap: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .gallery {
+                columns: 2;
+                column-gap: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gallery {
+                columns: 1;
+            }
+        }
+
+        .photo-card {
+            break-inside: avoid;
+            margin-bottom: 16px;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 4px 15px rgba(180, 140, 140, 0.15);
+            background: #fff;
+        }
+
+        .photo-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .photo-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(200, 150, 150, 0.25);
+        }
+
+        .photo-card img {
+            width: 100%;
+            display: block;
+            transition: transform 0.6s ease;
+        }
+
+        .photo-card:hover img {
+            transform: scale(1.08);
+        }
+
+        .photo-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(180, 130, 130, 0.4), transparent 50%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            display: flex;
+            align-items: flex-end;
+            padding: 20px;
+        }
+
+        .photo-card:hover .photo-overlay {
+            opacity: 1;
+        }
+
+        .photo-overlay span {
+            color: white;
+            font-size: 0.9rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        /* 情话弹窗 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(92, 64, 51, 0.6);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #fff9f5, #fdf0f0);
+            padding: 40px 50px;
+            border-radius: 20px;
+            max-width: 400px;
+            text-align: center;
+            transform: scale(0.8);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 20px 60px rgba(150, 100, 100, 0.3);
+            margin: 20px;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-heart {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.1); }
+        }
+
+        .modal-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #6b4f4f;
+            font-family: 'Noto Serif SC', serif;
+        }
+
+        .modal-close {
+            margin-top: 25px;
+            padding: 8px 30px;
+            border: 1px solid #d4a5a5;
+            border-radius: 30px;
+            background: transparent;
+            color: #a07070;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .modal-close:hover {
+            background: #e8b4b8;
+            color: white;
+        }
+
+        /* 底部寄语 */
+        .footer-section {
+            text-align: center;
+            padding: 80px 20px 100px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .footer-text {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: clamp(1.3rem, 4vw, 1.8rem);
+            color: #8b6b61;
+            line-height: 2;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .footer-sign {
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: #b09090;
+            letter-spacing: 0.3em;
+        }
+
+        /* 装饰元素 */
+        .deco-circle {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.4;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .deco-1 {
+            width: 300px;
+            height: 300px;
+            background: #f5cac3;
+            top: 10%;
+            right: -50px;
+        }
+
+        .deco-2 {
+            width: 250px;
+            height: 250px;
+            background: #e8d5d5;
+            bottom: 20%;
+            left: -50px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 背景装饰 -->
+    <div class="deco-circle deco-1"></div>
+    <div class="deco-circle deco-2"></div>
+
+    <!-- 爱心飘落 -->
+    <div class="hearts-container" id="hearts"></div>
+
+    <!-- 开场封面 -->
+    <section class="hero-section">
+        <h1 class="name-title">闵辉</h1>
+        <p class="subtitle">· 人间朝暮 · 叶落惊秋 ·</p>
+        <div class="typewriter" id="typewriter"></div>
+        <div class="scroll-hint">↓ 往下滑有惊喜 ↓</div>
+    </section>
+
+    <!-- 照片画廊 -->
+    <section class="gallery-section">
+        <h2 class="section-title">✨ 碎片收集册 ✨</h2>
+        <div class="gallery" id="gallery">
+            <div class="photo-card">
+                <img src="img/1.jpg" alt="闵辉">
+                <div class="photo-overlay"><span>♡ 点开有惊喜</span></div>
+            </div>
+            <div class="photo-card">
+                <img src="img/2.jpg" alt="闵辉">
+                <div class="photo-overlay"><span>♡ 点开有惊喜</span></div>
+            </div>
+            <div class="photo-card">
+                <img src="img/3.jpg" alt="闵辉">
+                <div class="photo-overlay"><span>♡ 点开有惊喜</span></div>
+            </div>
+            <div class="photo-card">
+                <img src="img/4.jpg" alt="闵辉">
+                <div class="photo-overlay"><span>♡ 点开有惊喜</span></div>
+            </div>
+            <div class="photo-card">
+                <img src="img/5.jpg" alt="闵辉">
+                <div class="photo-overlay"><span>♡ 点开有惊喜</span></div>
+            </div>
+            <div class="photo-card">
+                <img src="img/6.jpg" alt="闵辉">
+                <div class="photo-overlay"><span>♡ 点开有惊喜</span></div>
+            </div>
+            <div class="photo-card">
+                <img src="img/7.jpg" alt="闵辉">
+                <div class="photo-overlay"><span>♡ 点开有惊喜</span></div>
+            </div>
+            <div class="photo-card">
+                <img src="img/8.jpg" alt="闵辉">
+                <div class="photo-overlay"><span>♡ 点开有惊喜</span></div>
+            </div>
+            <div class="photo-card">
+                <img src="img/9.jpg" alt="闵辉">
+                <div class="photo-overlay"><span>♡ 点开有惊喜</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 底部寄语 -->
+    <section class="footer-section">
+        <div class="footer-text">
+            闵然一笑，辉光万顷<br>
+            愿你岁岁常欢愉，万事皆胜意
+        </div>
+        <div class="footer-sign">— 给最特别的你 —</div>
+    </section>
+
+    <!-- 情话弹窗 -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-heart">♡</div>
+            <p class="modal-text" id="modalText"></p>
+            <button class="modal-close" onclick="closeModal()">知道啦</button>
+        </div>
+    </div>
+
+    <script>
+        // 爱心飘落效果
+        function createHearts() {
+            const container = document.getElementById('hearts');
+            const heartSymbols = ['♡', '♥', '✿', '❀'];
+            
+            function addHeart() {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.fontSize = (Math.random() * 15 + 12) + 'px';
+                heart.style.animationDuration = (Math.random() * 5 + 8) + 's';
+                heart.style.animationDelay = Math.random() * 2 + 's';
+                container.appendChild(heart);
+                
+                setTimeout(() => {
+                    heart.remove();
+                }, 15000);
+            }
+            
+            for (let i = 0; i < 15; i++) {
+                setTimeout(addHeart, i * 300);
+            }
+            
+            setInterval(addHeart, 800);
+        }
+
+        // 打字机效果
+        function typeWriter() {
+            const texts = [
+                "世界很吵，你要好好的",
+                "你笑起来的时候，万物失色",
+                "闵辉两个字，就是最好的诗",
+                "慢慢走，沿途有风景，背后有星光"
+            ];
+            const element = document.getElementById('typewriter');
+            let textIndex = 0;
+            let charIndex = 0;
+            let isDeleting = false;
+            
+            function type() {
+                const currentText = texts[textIndex];
+                
+                if (isDeleting) {
+                    element.innerHTML = currentText.substring(0, charIndex - 1) + '<span class="cursor"></span>';
+                    charIndex--;
+                } else {
+                    element.innerHTML = currentText.substring(0, charIndex + 1) + '<span class="cursor"></span>';
+                    charIndex++;
+                }
+                
+                let delay = isDeleting ? 50 : 120;
+                
+                if (!isDeleting && charIndex === currentText.length) {
+                    delay = 2500;
+                    isDeleting = true;
+                } else if (isDeleting && charIndex === 0) {
+                    isDeleting = false;
+                    textIndex = (textIndex + 1) % texts.length;
+                    delay = 500;
+                }
+                
+                setTimeout(type, delay);
+            }
+            
+            setTimeout(type, 2000);
+        }
+
+        // 照片滚动渐入
+        function observePhotos() {
+            const cards = document.querySelectorAll('.photo-card');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.classList.add('visible');
+                        }, index * 80);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            cards.forEach(card => observer.observe(card));
+        }
+
+        // 情话库
+        const loveWords = [
+            "闵辉，你今天也很好看呀 ♡",
+            "见到你的那一刻，心里的小鹿就撞晕了",
+            "你是我疲惫生活里的温柔梦想",
+            "想把所有的温柔都给你",
+            "你眨一下眼，我的世界就亮了",
+            "闵然心动，辉光所至，皆是你",
+            "遇见你，是所有故事的开始",
+            "你不用多好，我喜欢就好",
+            "想和你一起看遍人间烟火",
+            "你的名字，是我听过最短的情书",
+            "世界万般好，都不及你一个微笑",
+            "愿你眼里有光，心中有爱",
+            "每一次见你，都像第一次心动",
+            "你是藏在微风里的欢喜",
+            "漫漫人生，祝你可爱得不像话"
+        ];
+
+        // 点击照片弹情话
+        function initPhotoClick() {
+            const cards = document.querySelectorAll('.photo-card');
+            const modal = document.getElementById('modal');
+            const modalText = document.getElementById('modalText');
+            
+            cards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const randomText = loveWords[Math.floor(Math.random() * loveWords.length)];
+                    modalText.textContent = randomText;
+                    modal.classList.add('active');
+                });
+            });
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        // 点击弹窗背景关闭
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if (e.target.id === 'modal') {
+                closeModal();
+            }
+        });
+
+        // 初始化
+        window.addEventListener('DOMContentLoaded', () => {
+            createHearts();
+            typeWriter();
+            observePhotos();
+            initPhotoClick();
+        });
+    </script>
+</body>
+</html>
